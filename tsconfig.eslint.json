@@ -1,0 +1,12 @@
+{
+    "extends": "@tsconfig/node18/tsconfig.json",
+    "include": ["**/*.ts", ".eslintrc.cjs", "vitest.config.js"],
+
+    "compilerOptions": {
+      "strict": true,
+      "paths": {
+        "@/*": ["./src/*"],
+        "@tests/*": ["./tests/*"],
+      }
+    }
+}
