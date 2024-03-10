@@ -11,9 +11,9 @@ Built on a backbone of TypeScript and Express.js, this application employs an ar
 Where (module) is any one of messages, sprints, templates, or users.
 
 - `GET /(module)` : Retrieve a list of all (module). Supports pagination through query parameters `limit` and `offset`.
-- `POST /(module)` : Create a new (module) in the database. Expects a JSON payload with message details.
+- `POST /(module)` : Create a new (module) in the database. Expects a JSON payload with (module) details.
 - `GET /(module)/:id` : Retrieve a specific (module) by its ID.
-- `PATCH /(module)/:id` : Update a specific (module) by its ID. Expects a JSON payload with the updated message details.
+- `PATCH /(module)/:id` : Update a specific (module) by its ID. Expects a JSON payload with the updated (module) details.
 - `DELETE /(module)/:id`: Delete a specific (module) by its ID.
 - `POST /messages/send` : Send a congratulatory message to a Discord user. Expects a JSON payload with `username`, `code`.
 
