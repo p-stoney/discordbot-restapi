@@ -2,6 +2,8 @@ import { Database } from '@/database';
 import { messagesRepository } from './repository';
 import { MessageNotFound } from './errors';
 import { InsertableMessageData, UpdateableMessageData } from './schema';
+import { UserService } from '@/modules/users/userService';
+import { SprintService } from '@/modules/sprints/sprintService';
 
 /**
  * Provides high-level operations for managing messages in the application,
@@ -12,6 +14,10 @@ export class MessageService {
 
   private messagesRepo: ReturnType<typeof messagesRepository>;
 
+  private userService: UserService;
+
+  private sprintService: SprintService;
+
   /**
    * Constructs a new MessageService instance with a database connection.
    *
@@ -20,6 +26,8 @@ export class MessageService {
   constructor(db: Database) {
     this.db = db;
     this.messagesRepo = messagesRepository(db);
+    this.userService = new UserService(db);
+    this.sprintService = new SprintService(db);
   }
 
   /**
@@ -51,6 +59,34 @@ export class MessageService {
       throw new MessageNotFound(`Message with ID ${id} not found`);
     }
     return message;
+  }
+
+  /**
+   * Finds all messages associated with a user's username.
+   * @param {string} username - The unique username of a user.
+   * @throws {MessageNotFound} If no messages are found.
+   * @returns {Promise<Array>} A promise that resolves with the found messages.
+   */
+  async findByUsername(username: string) {
+    const user = await this.userService.findByName(username);
+    if (!user) {
+      throw new MessageNotFound(`Message with username ${username} not found`);
+    }
+    return this.messagesRepo.findByUserId(user.id);
+  }
+
+  /**
+   * Finds all messages associated with a sprint's code.
+   * @param {string} sprintCode - The unique code of a sprint.
+   * @throws {MessageNotFound} If no messages are found.
+   * @returns {Promise<Array>} A promise that resolves with the found messages.
+   */
+  async findBySprintCode(sprintCode: string) {
+    const sprint = await this.sprintService.findByCode(sprintCode);
+    if (!sprint) {
+      throw new MessageNotFound(`Message with sprint code ${sprintCode} not found`);
+    }
+    return this.messagesRepo.findBySprintId(sprint.id);
   }
 
   /**

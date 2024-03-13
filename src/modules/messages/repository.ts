@@ -12,6 +12,33 @@ export const messagesRepository = (db: Database) => {
 
   return {
     ...repository,
+
+    /**
+     * Finds all messages associated with a user's userId.
+     * @param {number} userId - The unique userId of a user.
+     * @throws {MessageNotFound} If no messages are found.
+     * @returns {Promise<Array>} A promise that resolves with the found messages.
+     */
+    findByUserId: async (userId: number) =>
+      db
+        .selectFrom('messages')
+        .selectAll()
+        .where('userId', '=', userId)
+        .execute(),
+
+    /**
+     * Finds all messages associated with a sprint's sprintId.
+     * @param {number} sprintId - The unique sprintId of a sprint.
+     * @throws {MessageNotFound} If no messages are found.
+     * @returns {Promise<Array>} A promise that resolves with the found messages.
+    */
+    findBySprintId: async (sprintId: number) =>
+      db
+        .selectFrom('messages')
+        .selectAll()
+        .where('sprintId', '=', sprintId)
+        .execute(),
+
     /**
      * Creates a new message with the provided data.
      * @param {InsertableMessageData} messageData - The data to create a new message.

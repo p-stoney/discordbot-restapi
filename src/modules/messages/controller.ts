@@ -1,6 +1,8 @@
 import { Router } from 'express';
 import { StatusCodes } from 'http-status-codes';
 import * as schema from './schema';
+import { parseUsername } from '@/modules/users/schema';
+import { parseCode } from '@/modules/sprints/schema';
 import { jsonRoute } from '@/middleware/jsonRoute';
 import { Database } from '@/database';
 import { MessageService } from './messageService';
@@ -26,6 +28,18 @@ const messagesController = (db: Database) => {
     .route('/')
     .get(
       jsonRoute(async (req) => {
+        const { username, sprint } = req.query;
+
+        if (username) {
+          const validatedUsername = parseUsername(username);
+          return messageService.findByUsername(validatedUsername);
+        }
+
+        if (sprint) {
+          const validatedSprint = parseCode(sprint);
+          return messageService.findBySprintCode(validatedSprint);
+        }
+
         const limit = parseInt(req.query.limit as string, 10) || 10;
         const offset = parseInt(req.query.offset as string, 10) || 0;
         const records = await messageService.findAll(limit, offset);
@@ -76,11 +90,13 @@ const messagesController = (db: Database) => {
   router.route('/send').post(
     jsonRoute(async (req) => {
       const { username, code } = req.body;
+      const validatedUsername = parseUsername(username);
+      const validatedCode = parseCode(code);
       const channelId: string = process.env.CHANNEL_ID || '';
       const apiKey: string = process.env.GIPHY_API_KEY || '';
       await botService.sendCongratulatoryMessage(
-        username,
-        code,
+        validatedUsername,
+        validatedCode,
         channelId,
         apiKey
       );
